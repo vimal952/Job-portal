@@ -2,6 +2,7 @@ import {Webhook} from "svix"
 import User from "../models/user.js"
 
 export const clerkWebhook=async(req,res)=>{
+    console.log("Received Clerk webhook event:",req.body)
     try{
     //create a svix webhook handler instance
     const whook=new Webhook(process.env.CLERK_WEBHOOK_SECRET)
