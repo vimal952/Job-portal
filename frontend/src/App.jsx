@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import 'quill/dist/quill.snow.css';
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   const{showRecruiterLogin,companyToken}=useContext(AppContext);
   return (
