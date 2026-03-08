@@ -1,21 +1,74 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext';
-
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 function RecruiterLogin() {
+  const navigate=useNavigate();
   const [state,setstate]=useState('Login');
   const [name,setname]=useState('');
   const [password,setpassword]=useState('');
   const [email,setemail]=useState('');
   const [image,setimage]=useState(false);
   const [isTextDataSubmitted,setisTextDataSubmitted]=useState(false);
-  const {setshowRecruiterLogin}=useContext(AppContext);
-  const handleSubmit=(e)=>{
-    e.preventDefault();
-    if(state==='Sign Up' && !isTextDataSubmitted){
-      setisTextDataSubmitted(true);
-    }
+  const {setshowRecruiterLogin,backendUrl,setCompanyToken,setCompanyData}=useContext(AppContext);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (state === "Sign Up" && !isTextDataSubmitted) {
+    setisTextDataSubmitted(true);
+    return;
   }
+  try {
+    if (state === "Login") {
+      const { data } = await axios.post(
+        backendUrl + "/api/company/login",
+        { email, password }
+      );
+      //console.log(data); 
+      if(data.success){
+        console.log(data)
+        setCompanyData(data.company)
+        setCompanyToken(data.token)
+        localStorage.setItem('companyToken',data.token)
+        setshowRecruiterLogin(false);
+        navigate('/dashboard')
+      }
+      else{
+        toast.error(data.message)
+      }
+
+    }
+    else{
+      if(!image){
+    toast.error("Please upload company logo")
+    return
+  }
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("image", image);
+      const { data } = await axios.post(
+        backendUrl + "/api/company/register",
+        formData
+      );
+      if(data.success){
+        console.log(data)
+        setCompanyData(data.company)
+        setCompanyToken(data.token)
+        localStorage.setItem('companyToken',data.token)
+        setshowRecruiterLogin(false);
+        navigate('/dashboard')
+      }
+      else{
+        toast.error(data.message)
+      }
+    }
+  } catch (error) {
+     toast.error(error.message)
+  }
+};
   useEffect(()=>{
      document.body.style.overflow='hidden';
       return()=>{

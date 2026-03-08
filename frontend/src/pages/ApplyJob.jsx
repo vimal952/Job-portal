@@ -1,27 +1,72 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import { assets } from "../assets/assets";
+import { assets} from "../assets/assets";
 import Loading from "../components/Loading";
 import Navbar from "../components/Navbar";
 import kconvert from "k-convert";
 import moment from "moment";
 import Jobcard from "../components/Jobcard";
-
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 function ApplyJob() {
+  const navigate = useNavigate();
+  const {getToken}=useAuth();
   const { id } = useParams();
+  const [isAlredayApplied, setIsAlredayApplied] = useState(false);
   const [jobData, setJobData] = useState(null);
-  const { jobs } = useContext(AppContext);
-
+  const { jobs,backendUrl,userData,userApplications,fetchUserApplications } = useContext(AppContext);
+  const fetchJob = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + `/api/jobs/${id}`);
+      if (data.success) {
+        setJobData(data.job);
+        //console.log(data.job);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   useEffect(() => {
-    if (jobs.length > 0) {
-      const foundJob = jobs.find((job) => job._id === id);
-      if (foundJob) {
-        setJobData(foundJob);
+     fetchJob();
+  }, [id]);
+  const applyHandler=async(e)=>{
+      e.preventDefault();
+      try{
+       if(!userData){
+        return toast.error('Please login to apply for job')
+       }
+       if(!userData.resume){
+        navigate('/applications')
+        return toast.error('Please upload resume to apply for job')
+       }
+       const token=await getToken()
+       const {data}=await axios.post(backendUrl+'/api/users/apply-job',{jobId:jobData._id},{headers:{Authorization:`Bearer ${token}`}})
+       if(data.success){
+        toast.success(data.message);
+        fetchUserApplications()
+       }
+       else{
+        toast.error(data.message)
+       }
+       
+      }
+      catch(error){
+        toast.error(error.message)
       }
     }
-  }, [id, jobs]);
-
+    const checkAlreadyApplied=async()=>{
+      const hasApplied=userApplications.some((application)=>application.jobId._id===jobData._id)
+      setIsAlredayApplied(hasApplied)
+    }
+    useEffect(()=>{
+      if(userApplications.length>0 && jobData ){
+        checkAlreadyApplied()
+      }
+    },[jobData,userApplications,id])
   if (!jobData) return <Loading />;
 
   const relatedJobs = jobs
@@ -29,7 +74,10 @@ function ApplyJob() {
       (job) =>
         job.companyId._id === jobData.companyId._id &&
         job._id !== jobData._id
-    )
+    ).filter(job=>{
+      const hasApplied=userApplications.some((application)=>application.jobId._id===job._id)
+      return !hasApplied
+    })
     .slice(0, 4);
 
   return (
@@ -101,8 +149,8 @@ function ApplyJob() {
 
               {/* Right Apply Button */}
               <div className="text-center md:text-right">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition shadow-md">
-                  Apply Now
+                <button onClick={applyHandler} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition shadow-md">
+                  {isAlredayApplied?'Already Applied':'Apply Now'}
                 </button>
 
                 <p className="text-sm text-gray-500 mt-3">
@@ -128,8 +176,8 @@ function ApplyJob() {
                 dangerouslySetInnerHTML={{ __html: jobData.description }}
               ></div>
 
-              <button className="mt-10 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition shadow-md">
-                Apply Now
+              <button onClick={applyHandler} className="mt-10 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition shadow-md">
+               {isAlredayApplied?'Already Applied':'Apply Now'}
               </button>
 
             </div>

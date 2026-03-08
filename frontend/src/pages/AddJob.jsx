@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Quill from 'quill';
 import { JobCategories, JobLocations } from '../assets/assets';
+import { AppContext } from '../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 function Addjob() {
   const[title,settitle]=useState('');
   const [location,setlocation]=useState('Bangalore');
@@ -9,7 +12,31 @@ function Addjob() {
   const [salary,setsalary]=useState(0);
   const editorRef=useRef(null);
   const quillRef=useRef(null);
-
+  const {backendUrl,companyToken,userData,userApplications}=useContext(AppContext);
+  const onSubmitHandler=async(e)=>{
+    e.preventDefault();
+    try{
+      const description=quillRef.current.root.innerHTML;
+      console.log(description)
+      const {data}= await axios.post(backendUrl+'/api/company/post-job',{title,description,location,category,level,salary},{headers:{token:companyToken}});
+      console.log(data)
+      if(data.success){
+        toast.success(data.message)
+        settitle('');
+        setlocation('Bangalore');
+        setcategory('Programming');
+        setlevel('Beginner level');
+        setsalary(0);
+        quillRef.current.root.innerHTML='';
+      }
+      else{
+        toast.error(data.message)
+      }
+    }
+    catch(error){
+    toast.error(error.message)
+    }
+  }
   useEffect(()=>{
     if(!quillRef.current && editorRef.current){
       quillRef.current=new Quill(editorRef.current,{
@@ -18,8 +45,9 @@ function Addjob() {
     })
   }
   })
+  
   return (
-    <form className='container p-4 flex flex-col w-full items-start gap-3'>
+    <form onSubmit={onSubmitHandler} className='container p-4 flex flex-col w-full items-start gap-3'>
       <div className='w-full'>
         <p className='mb-2'>
          Job Title 
