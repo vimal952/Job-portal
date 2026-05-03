@@ -1,6 +1,5 @@
 import React from 'react'
 import { assets } from '../assets/assets'
-
 function AppDownload() {
   return (
     <div className="mx-auto my-20 max-w-6xl px-6">
