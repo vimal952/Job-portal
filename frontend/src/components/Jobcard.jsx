@@ -9,7 +9,7 @@ function Jobcard({ job }) {
       {/* Company Icon */}
       <div className="mb-3">
         <img
-          src={job.companyId.image}
+          src={job.companyId?.image}
           alt="Company"
           className="w-12 h-12 object-contain"
         />

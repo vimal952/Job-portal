@@ -59,11 +59,11 @@ function ApplyJob() {
       }
     }
     const checkAlreadyApplied=async()=>{
-      const hasApplied=userApplications.some((application)=>application.jobId._id===jobData._id)
+      const hasApplied=userApplications.some((application)=>application.jobId?._id===jobData?._id)
       setIsAlredayApplied(hasApplied)
     }
     useEffect(()=>{
-      if(userApplications.length>0 && jobData ){
+      if(userApplications?.length>0 && jobData ){
         checkAlreadyApplied()
       }
     },[jobData,userApplications,id])
@@ -72,10 +72,10 @@ function ApplyJob() {
   const relatedJobs = jobs
     .filter(
       (job) =>
-        job.companyId._id === jobData.companyId._id &&
+        job.companyId?._id === jobData.companyId?._id &&
         job._id !== jobData._id
     ).filter(job=>{
-      const hasApplied=userApplications.some((application)=>application.jobId._id===job._id)
+      const hasApplied=userApplications.some((application)=>application.jobId?._id===job._id)
       return !hasApplied
     })
     .slice(0, 4);
@@ -95,14 +95,14 @@ function ApplyJob() {
               {/* Left Info */}
               <div className="flex flex-col md:flex-row items-center gap-6">
                 <img
-                  src={jobData.companyId.image}
-                  alt="company"
+                  src={jobData.companyId?.image || assets.company_icon}
+                  alt={jobData.companyId?.name || 'company'}
                   className="w-24 h-24 object-contain border rounded-lg p-2 bg-white"
                 />
 
                 <div className="text-center md:text-left">
                   <h1 className="text-3xl font-bold mb-3">
-                    {jobData.title}
+                    {jobData.title || 'Job Details'}
                   </h1>
 
                   <div className="flex flex-wrap gap-4 text-gray-600 text-sm">

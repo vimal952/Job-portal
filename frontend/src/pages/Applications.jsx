@@ -71,20 +71,20 @@ function Applications() {
         </tr>
       </thead>
       <tbody>
-        {userApplications.map((job, index) => true?(
+        {userApplications?.map((job, index) => (
           <tr key={index}>
             <td className='py-3 px-4 flex items-center gap-2 border-b'>
-              <img className='w-8 h-8' src={job.companyId?.image} alt=''/>
-              {job.companyId?.name}
+              <img className='w-8 h-8' src={job.companyId?.image} alt='Company'/>
+              {job.companyId?.name || 'Unknown Company'}
             </td>
-            <td className='py-2 px-4 border-b'>{job.jobId.title}</td>
-            <td className='py-2 px-4 border-b max-sm:hidden'>{job.jobId.location}</td>
-            <td className='py-2 px-4 border-b max-sm:hidden'>{moment(job.date).format('ll')}</td>
-            <td className='py-2 px-4 border-b'> <span className={`${job.status==='Accepted'? 'bg-green-100 text-green-800' : job.status==='Rejected' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' } px-4 py-1.5 rounded` }>
-              {job.status}
+            <td className='py-2 px-4 border-b'>{job.jobId?.title || 'Unknown Role'}</td>
+            <td className='py-2 px-4 border-b max-sm:hidden'>{job.jobId?.location || 'Unknown Location'}</td>
+            <td className='py-2 px-4 border-b max-sm:hidden'>{job.date ? moment(job.date).format('ll') : 'Unknown Date'}</td>
+            <td className='py-2 px-4 border-b'> <span className={`${job.status==='Accepted'? 'bg-green-100 text-green-800' : job.status==='Rejected' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' } px-4 py-1.5 rounded`}>
+              {job.status || 'Pending'}
               </span> </td>
           </tr>
-        ):(null))}
+        ))}
       </tbody>
      </table>
    </div>
