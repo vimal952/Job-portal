@@ -7,6 +7,7 @@ import companyRoutes from './routes/companyRoutes.js';
 import connectCloudinary from './config/Cloudinary.js';
 import jobRoutes from './routes/jobRoutes.js';
 import userRoutes from './routes/userRoutes.js'
+
 import {clerkMiddleware} from '@clerk/express'
 // Create Express app
 const app = express()
