@@ -15,23 +15,7 @@ const app = express()
  await connectDB();
  await connectCloudinary();
 // Middlewares
-const allowedOrigins = [
-  "https://job-portal-x7yr-frontend-bnwnmh4ic-vimal-s-projects-12136044.vercel.app",
-  "https://job-portal-xi-bay.vercel.app"
-]
-
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}))
-app.options("*", cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}))
+app.use(cors())
 app.use(express.json())  
 app.use(clerkMiddleware())
 
