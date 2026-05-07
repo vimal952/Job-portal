@@ -17,9 +17,7 @@ const app = express()
 // Middlewares
 app.use(cors())
 app.use(express.json())  
-app.use(clerkMiddleware({
-    authorizedParties: ['https://job-portal-x7yr-frontend-loycz2ub7-vimal-s-projects-12136044.vercel.app']
-}))
+app.use(clerkMiddleware())
 
 // Sample route
 app.get('/',(req,res)=>{
